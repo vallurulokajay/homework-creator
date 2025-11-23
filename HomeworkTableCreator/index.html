@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homework Table Creator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #3F51B5;
+            /* Indigo */
+            --primary-dark: #303F9F;
+            --secondary: #FF4081;
+            /* Pink accent */
+            --background: #E8EAF6;
+            /* Light Indigo bg */
+            --surface: #ffffff;
+            --error: #D32F2F;
+            --text-primary: #1A237E;
+            /* Dark Blue text */
+            --text-secondary: #5C6BC0;
+            --border: #C5CAE9;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            /* Aesthetic font */
+            background-color: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: var(--surface);
+            border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(63, 81, 181, 0.15);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        input[type="date"],
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid var(--background);
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: #F8F9FE;
+            color: var(--text-primary);
+        }
+
+        input:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(63, 81, 181, 0.1);
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 16px 24px;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-shadow: 0 4px 12px rgba(63, 81, 181, 0.2);
+            margin-bottom: 12px;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(63, 81, 181, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background-color: #B0BEC5;
+            box-shadow: none;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        button.secondary {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+            box-shadow: none;
+        }
+
+        button.secondary:hover {
+            background-color: var(--background);
+        }
+
+        .entry-list {
+            margin-top: 30px;
+            padding-top: 20px;
+        }
+
+        .entry-item {
+            background-color: #fff;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.02);
+            transition: transform 0.2s;
+        }
+
+        .entry-item:hover {
+            transform: translateX(4px);
+            border-color: var(--primary);
+        }
+
+        .entry-subject {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 6px;
+            font-size: 1.1rem;
+        }
+
+        .entry-homework {
+            color: #546E7A;
+            font-size: 0.95rem;
+        }
+
+        .delete-btn {
+            background: #FFEBEE;
+            color: #D32F2F;
+            padding: 10px;
+            width: auto;
+            box-shadow: none;
+            border-radius: 12px;
+            margin: 0;
+            margin-left: 12px;
+        }
+
+        .delete-btn:hover {
+            background: #FFCDD2;
+            transform: none;
+        }
+
+        #preview-section {
+            display: none;
+            margin-top: 30px;
+            text-align: center;
+            background: #F8F9FE;
+            padding: 20px;
+            border-radius: 20px;
+        }
+
+        #generated-image {
+            max-width: 100%;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <header>
+            <img src="logo.jpg" alt="Logo"
+                style="width: 80px; height: 80px; border-radius: 50%; margin-bottom: 10px; border: 3px solid white;">
+            <h1>Homework Table</h1>
+        </header>
+
+        <div class="content">
+            <!-- Date Section -->
+            <div class="form-group">
+                <label for="date-picker">Select Date</label>
+                <input type="date" id="date-picker">
+            </div>
+
+            <!-- Entry Form -->
+            <div id="entry-form" class="hidden">
+                <div class="form-group">
+                    <label for="subject-input">Subject</label>
+                    <input type="text" id="subject-input" placeholder="e.g., Mathematics">
+                </div>
+                <div class="form-group">
+                    <label for="homework-input">Homework</label>
+                    <textarea id="homework-input" rows="3" placeholder="e.g., Complete Chapter 5 exercises"></textarea>
+                </div>
+                <button id="add-btn">Add Entry</button>
+            </div>
+
+            <!-- List -->
+            <div id="list-section" class="hidden">
+                <div class="entry-list" id="entries-container"></div>
+                <button id="generate-btn" style="margin-top: 20px;">Generate Table Image</button>
+            </div>
+
+            <!-- Preview -->
+            <div id="preview-section">
+                <h3 style="color:var(--primary); margin-bottom:16px;">Preview</h3>
+                <img id="generated-image" alt="Generated Table">
+                <button id="share-btn"
+                    style="display: inline-flex; align-items: center; justify-content: center; gap: 10px;">
+                    Share Image
+                    <svg xmlns="http://www.w3.org/2000/svg" height="20" viewBox="0 0 24 24" width="20" fill="#FFFFFF">
+                        <path d="M0 0h24v24H0V0z" fill="none" />
+                        <path
+                            d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92 1.61 0 2.92-1.31 2.92-2.92s-1.31-2.92-2.92-2.92z" />
+                    </svg>
+                </button>
+                <button id="download-btn" class="secondary">Download Image ⬇️</button>
+                <button id="back-btn" class="secondary" style="border:none; color:#757575;">Back to Edit</button>
+            </div>
+        </div>
+
+        <div
+            style="text-align: center; padding: 15px; background-color: #F5F5F5; border-top: 1px solid #E0E0E0; font-size: 0.8rem; color: #757575;">
+            Developed by <strong>LOK AJAY</strong>
+        </div>
+    </div>
+
+    <!-- Hidden Canvas for Drawing -->
+    <canvas id="table-canvas" style="display: none;"></canvas>
+
+    <script>
+        // State
+        let selectedDate = null;
+        let entries = [];
+
+        // Elements
+        const datePicker = document.getElementById('date-picker');
+        const entryForm = document.getElementById('entry-form');
+        const subjectInput = document.getElementById('subject-input');
+        const homeworkInput = document.getElementById('homework-input');
+        const addBtn = document.getElementById('add-btn');
+        const listSection = document.getElementById('list-section');
+        const entriesContainer = document.getElementById('entries-container');
+        const generateBtn = document.getElementById('generate-btn');
+        const previewSection = document.getElementById('preview-section');
+        const generatedImage = document.getElementById('generated-image');
+        const downloadBtn = document.getElementById('download-btn');
+        const shareBtn = document.getElementById('share-btn');
+        const backBtn = document.getElementById('back-btn');
+        const canvas = document.getElementById('table-canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Event Listeners
+        datePicker.addEventListener('change', (e) => {
+            selectedDate = e.target.value;
+            if (selectedDate) {
+                entryForm.classList.remove('hidden');
+                listSection.classList.remove('hidden');
+            } else {
+                entryForm.classList.add('hidden');
+                listSection.classList.add('hidden');
+            }
+        });
+
+        addBtn.addEventListener('click', () => {
+            const subject = subjectInput.value.trim();
+            const homework = homeworkInput.value.trim();
+            if (!subject || !homework) { alert("Please fill in both fields."); return; }
+            entries.push({ id: Date.now(), subject, homework });
+            subjectInput.value = ''; homeworkInput.value = ''; subjectInput.focus();
+            renderEntries();
+        });
+
+        generateBtn.addEventListener('click', generateImage);
+
+        downloadBtn.addEventListener('click', () => {
+            const link = document.createElement('a');
+            link.download = `Homework_${selectedDate}.jpg`;
+            link.href = generatedImage.src;
+            link.click();
+        });
+
+        shareBtn.addEventListener('click', async () => {
+            if (!navigator.share) {
+                alert("Sharing is not supported on this browser. Please use the Download button.");
+                return;
+            }
+
+            try {
+                const response = await fetch(generatedImage.src);
+                const blob = await response.blob();
+                const file = new File([blob], `Homework_${selectedDate}.jpg`, { type: 'image/jpeg' });
+
+                await navigator.share({
+                    title: 'Homework Table',
+                    text: `Here is the homework for ${selectedDate}`,
+                    files: [file]
+                });
+            } catch (err) {
+                console.error("Share failed:", err);
+            }
+        });
+
+        backBtn.addEventListener('click', () => {
+            previewSection.style.display = 'none';
+            document.querySelector('.content > div:not(#preview-section)').style.display = 'block';
+        });
+
+        // Functions
+        function renderEntries() {
+            entriesContainer.innerHTML = '';
+            if (entries.length === 0) {
+                entriesContainer.innerHTML = '<p style="text-align:center; color:#90A4AE;">No entries yet.</p>';
+                generateBtn.disabled = true;
+                return;
+            }
+            generateBtn.disabled = false;
+            entries.forEach(entry => {
+                const div = document.createElement('div');
+                div.className = 'entry-item';
+                div.innerHTML = `
+                <div class="entry-content">
+                    <div class="entry-subject">${escapeHtml(entry.subject)}</div>
+                    <div class="entry-homework">${escapeHtml(entry.homework)}</div>
+                </div>
+                <button class="delete-btn" onclick="deleteEntry(${entry.id})">✕</button>
+            `;
+                entriesContainer.appendChild(div);
+            });
+        }
+
+        window.deleteEntry = (id) => {
+            entries = entries.filter(e => e.id !== id);
+            renderEntries();
+        };
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function generateImage() {
+            if (!selectedDate || entries.length === 0) return;
+
+            // 1. Format Date to dd/mm/yyyy
+            const dateParts = selectedDate.split("-"); // YYYY-MM-DD
+            const formattedDate = `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}`;
+
+            // Config
+            const width = 1200;
+            const padding = 60;
+            const col1Width = (width - 2 * padding) * 0.3;
+            const col2Width = (width - 2 * padding) * 0.7;
+            const rowPadding = 30;
+
+            // Aesthetic Blue Theme Colors
+            const primaryColor = "#3F51B5"; // Indigo
+            const headerBgColor = "#3F51B5";
+            const headerTextColor = "#FFFFFF";
+            const tableHeaderBgColor = "#E8EAF6"; // Light Indigo
+            const tableHeaderTextColor = "#1A237E"; // Dark Blue
+            const rowAltColor = "#F8F9FE"; // Very Light Blue/White
+            const borderColor = "#C5CAE9";
+            const textColor = "#263238"; // Blue Grey
+
+            // Aesthetic Fonts
+            const fontStack = "'Poppins', sans-serif";
+            const headerFont = `600 60px ${fontStack}`;
+            const subHeaderFont = `600 48px ${fontStack}`;
+            const contentFont = `40px ${fontStack}`;
+            const footerFont = `500 30px ${fontStack}`;
+
+            // Calculate Heights
+            ctx.font = headerFont;
+            const headerHeight = 160;
+
+            ctx.font = subHeaderFont;
+            const tableHeaderHeight = 100 + rowPadding * 2;
+
+            ctx.font = contentFont;
+            let totalRowHeight = 0;
+            const rowHeights = entries.map(entry => {
+                const subLines = getLines(ctx, entry.subject, col1Width - 50);
+                const hwLines = getLines(ctx, entry.homework, col2Width - 50);
+                const maxLines = Math.max(subLines.length, hwLines.length);
+                return maxLines * 64 + rowPadding * 2;
+            });
+            totalRowHeight = rowHeights.reduce((a, b) => a + b, 0);
+
+            const footerHeight = 60; // Space for "Developed by..."
+
+            const totalHeight = headerHeight + tableHeaderHeight + totalRowHeight + padding * 2 + footerHeight;
+
+            // Resize Canvas
+            canvas.width = width;
+            canvas.height = totalHeight;
+
+            // Draw Background
+            ctx.fillStyle = "white";
+            ctx.fillRect(0, 0, width, totalHeight);
+
+            const tableStartY = padding;
+
+            // --- Draw Main Header (Rounded Top) ---
+            ctx.fillStyle = headerBgColor;
+            roundRect(ctx, padding, tableStartY, width - 2 * padding, headerHeight, 24, true, false);
+
+            // Header Text
+            ctx.fillStyle = headerTextColor;
+            ctx.font = headerFont;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText(`Homework  •  ${formattedDate}`, width / 2, tableStartY + headerHeight / 2);
+
+            // --- Draw Table Header ---
+            let currentY = tableStartY + headerHeight;
+
+            ctx.fillStyle = tableHeaderBgColor;
+            ctx.fillRect(padding, currentY, width - 2 * padding, tableHeaderHeight);
+
+            ctx.textAlign = "left";
+            ctx.textBaseline = "top";
+            ctx.font = subHeaderFont;
+            ctx.fillStyle = tableHeaderTextColor;
+            ctx.fillText("Subject", padding + 40, currentY + rowPadding);
+            ctx.fillText("Homework", padding + col1Width + 40, currentY + rowPadding);
+
+            currentY += tableHeaderHeight;
+
+            // --- Draw Rows ---
+            ctx.font = contentFont;
+
+            entries.forEach((entry, index) => {
+                const rowH = rowHeights[index];
+
+                // Zebra Striping
+                if (index % 2 === 0) {
+                    ctx.fillStyle = "white";
+                } else {
+                    ctx.fillStyle = rowAltColor;
+                }
+                ctx.fillRect(padding, currentY, width - 2 * padding, rowH);
+
+                // Draw Text
+                ctx.fillStyle = textColor;
+                const startY = currentY + rowPadding;
+
+                // Subject
+                const subLines = getLines(ctx, entry.subject, col1Width - 50);
+                subLines.forEach((line, i) => {
+                    ctx.fillText(line, padding + 40, startY + (i * 64));
+                });
+
+                // Homework
+                const hwLines = getLines(ctx, entry.homework, col2Width - 50);
+                hwLines.forEach((line, i) => {
+                    ctx.fillText(line, padding + col1Width + 40, startY + (i * 64));
+                });
+
+                // Subtle Separator
+                if (index < entries.length - 1) {
+                    ctx.strokeStyle = "#E0E0E0";
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(padding + 20, currentY + rowH);
+                    ctx.lineTo(width - padding - 20, currentY + rowH);
+                    ctx.stroke();
+                }
+
+                currentY += rowH;
+            });
+
+            // --- Draw Outer Border (Rounded Bottom) ---
+            ctx.strokeStyle = "#E8EAF6";
+            ctx.lineWidth = 2;
+            roundRect(ctx, padding, tableStartY, width - 2 * padding, currentY - tableStartY, 24, false, true);
+
+            // Vertical Divider
+            ctx.strokeStyle = "#E8EAF6";
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding + col1Width, tableStartY + headerHeight);
+            ctx.lineTo(padding + col1Width, currentY);
+            ctx.stroke();
+
+            // --- Draw Developer Credit ---
+            ctx.font = footerFont;
+            ctx.fillStyle = "#90A4AE";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.fillText("Developed by LOK AJAY", width / 2, currentY + 40);
+
+            // Show Preview
+            generatedImage.src = canvas.toDataURL("image/jpeg", 0.9);
+            previewSection.style.display = 'block';
+            previewSection.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function getLines(ctx, text, maxWidth) {
+            const words = text.split(" ");
+            const lines = [];
+            let currentLine = words[0];
+            for (let i = 1; i < words.length; i++) {
+                const word = words[i];
+                const width = ctx.measureText(currentLine + " " + word).width;
+                if (width < maxWidth) {
+                    currentLine += " " + word;
+                } else {
+                    lines.push(currentLine);
+                    currentLine = word;
+                }
+            }
+            lines.push(currentLine);
+            return lines;
+        }
+
+        function roundRect(ctx, x, y, width, height, radius, fill, stroke) {
+            ctx.beginPath();
+            ctx.moveTo(x + radius, y);
+            ctx.lineTo(x + width - radius, y);
+            ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+            ctx.lineTo(x + width, y + height - radius);
+            ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+            ctx.lineTo(x + radius, y + height);
+            ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+            ctx.lineTo(x, y + radius);
+            ctx.quadraticCurveTo(x, y, x + radius, y);
+            ctx.closePath();
+            if (fill) ctx.fill();
+            if (stroke) ctx.stroke();
+        }
+    </script>
+
+</body>
+
+</html>
